@@ -6,6 +6,7 @@ using UnityEngine;
 public class MainCharacter : MonoBehaviour
     
 {
+    public NeuronSpawner spawner;
     private float movementX = 0;
     private float movementY = 0;
     private float moveSpeed = 1.5f;
@@ -25,14 +26,19 @@ public class MainCharacter : MonoBehaviour
         
     }
 
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        Debug.Log("Trigger warning. I feel triggered by " + collision.gameObject.tag);
+        if (collision.gameObject.tag == "neuron")
+        {
+            spawner.spawnGameObject(5, collision.transform.position);
+        }
+    }
     void OnCollisionEnter2D(Collision2D collison)
     {
         isColliding = true;
-
-        if (collison.transform.tag != "Player")
-        {
-            //Debug.Log("Collision");
-        }
+        Debug.Log("colliding" + collison.transform.tag);
+       
     }
 
     private void OnCollisionExit2D(Collision2D collision)
@@ -40,3 +46,4 @@ public class MainCharacter : MonoBehaviour
         isColliding = false;
     }
 }
+ 

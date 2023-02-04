@@ -709,7 +709,7 @@ GameObject:
   - component: {fileID: 914238515}
   m_Layer: 0
   m_Name: NeuronSpawner
-  m_TagString: Untagged
+  m_TagString: spawner
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -744,6 +744,7 @@ MonoBehaviour:
   character: {fileID: 1083363961}
   neuron: {fileID: 8450561710525860750, guid: a0ee98758454a9741bdad973cda339b1, type: 3}
   pathway: {fileID: 7455153891261653302, guid: 6202e584745afb5478c2f7cb03e00732, type: 3}
+  maxNetworkDepth: 5
 --- !u!1 &1083363957
 GameObject:
   m_ObjectHideFlags: 0
@@ -756,6 +757,7 @@ GameObject:
   - component: {fileID: 1083363960}
   - component: {fileID: 1083363959}
   - component: {fileID: 1083363962}
+  - component: {fileID: 1083363963}
   m_Layer: 0
   m_Name: character
   m_TagString: Untagged
@@ -828,7 +830,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 3c10b39a38aed384cb2299466eed7852, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -868,7 +870,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1083363957}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.08, y: -4, z: 0}
+  m_LocalPosition: {x: -0.04, y: -0.59, z: 0}
   m_LocalScale: {x: 0.708253, y: 0.708253, z: 0.708253}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -887,6 +889,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5cef689053051b944a9b2be46d3b5815, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  spawner: {fileID: 914238515}
+--- !u!50 &1083363963
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1083363957}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
 --- !u!1 &1112767134
 GameObject:
   m_ObjectHideFlags: 0

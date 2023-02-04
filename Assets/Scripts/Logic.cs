@@ -9,6 +9,7 @@ public class Logic : MonoBehaviour
 
     public GameObject tunnelPrefab;
     public GameObject thoughtGameObject;
+    public GameObject neuronPrefab;
     private WeirdWikiManager wikiManager = new WeirdWikiManager();
     private List<string> solvingTitles;
     private Vector3 lastPrincipalPosition;
@@ -26,7 +27,7 @@ public class Logic : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float distance = Vector3.Distance(thoughtGameObject.transform.position, lastPrincipalPosition);
+       /* float distance = Vector3.Distance(thoughtGameObject.transform.position, lastPrincipalPosition);
         if(distance > 8.4)
         {
             float minDist = 10000;
@@ -46,7 +47,7 @@ public class Logic : MonoBehaviour
             print(closestTunnelText);
             placeJoinedTunnels(thoughtGameObject, closestTunnelText);
             lastPrincipalPosition = thoughtGameObject.transform.position;
-        }  
+        }  */
     }
 
 
@@ -64,6 +65,27 @@ public class Logic : MonoBehaviour
         } 
 
         return solvingPath;
+    }
+
+    public void onNeuronTriggered(Transform neuronPosition)
+    {
+        float minDist = 10000;
+        string closestTunnelText = "err";
+        GameObject closestTunnel = tunnels[0];
+        foreach (GameObject tunnel in tunnels)
+        {
+            float dist = Vector3.Distance(tunnel.transform.position, thoughtGameObject.transform.position);
+            if (dist < minDist)
+            {
+                closestTunnel = tunnel;
+                closestTunnelText = closestTunnel.GetComponentInChildren<TMPro.TextMeshProUGUI>().text;
+                minDist = dist;
+            }
+        }
+
+        print(closestTunnelText);
+        lastPrincipalPosition = neuronPosition.position;
+        placeJoinedTunnels(thoughtGameObject, closestTunnelText);
     }
 
     public void placeJoinedTunnels(GameObject thoughtGameObject, string currentTitle)
@@ -90,7 +112,17 @@ public class Logic : MonoBehaviour
             TMPro.TextMeshProUGUI textMesh = tunnelPrefab.GetComponentInChildren<TMPro.TextMeshProUGUI>();
             textMesh.text = data[i];
             var tunnelInstance = Instantiate(tunnelPrefab, thoughtGameObjectPosition + shiftDirection, rotationQuaternion);
+            var neuronInstance = Instantiate(neuronPrefab, getPositionFromRadiusAndAngleAroundCharacter(8.4f, rotationAngle * i, lastPrincipalPosition), Quaternion.identity);
+            //lastPrincipalPosition = neuronInstance.transform.position;
             tunnels.Add(tunnelInstance);
         }
+    }
+
+    private Vector3 getPositionFromRadiusAndAngleAroundCharacter(float radius, float angle, Vector3 spawnPoint)
+    {
+        float randomX = radius * Mathf.Cos((Mathf.PI / 180) * angle);
+        float randomY = radius * Mathf.Sin((Mathf.PI / 180) * angle);
+        return spawnPoint + new Vector3(randomX, randomY, 0);
+
     }
 }

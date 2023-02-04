@@ -2,11 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class MainCharacter : MonoBehaviour
     
 {
-    public NeuronSpawner spawner;
+    public Logic spawner;
     private float movementX = 0;
     private float movementY = 0;
     private float moveSpeed = 1.5f;
@@ -31,13 +32,12 @@ public class MainCharacter : MonoBehaviour
         Debug.Log("Trigger warning. I feel triggered by " + collision.gameObject.tag);
         if (collision.gameObject.tag == "neuron")
         {
-            spawner.spawnGameObject(5, collision.transform.position);
+            spawner.onNeuronTriggered(collision.transform);
         }
     }
     void OnCollisionEnter2D(Collision2D collison)
     {
         isColliding = true;
-        Debug.Log("colliding" + collison.transform.tag);
        
     }
 

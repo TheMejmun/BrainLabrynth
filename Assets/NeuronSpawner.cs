@@ -79,21 +79,9 @@ public class NeuronSpawner : MonoBehaviour
         }
         gameObjectBuffer.Add(layer);
         checkBufferDepthAndDeleteObjects();
-        assignLayersToEachObject();
     }
 
-    private void assignLayersToEachObject()
-    {
-        for (int i = 0; i < gameObjectBuffer.Count; i++)
-        {
-            int layerNumber = i;
 
-            gameObjectBuffer[i].ForEach(gameObj =>
-            {
-                gameObj.layer = LayerMask.NameToLayer(layerNumber.ToString());
-            });
-        }
-    }
 
     private void checkBufferDepthAndDeleteObjects()
     {

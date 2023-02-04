@@ -8,12 +8,10 @@ public struct NodeData
     {
         Title = title;
         LinksTo = new List<string>();
-        ChildrenLoaded = false;
     }
 
     public string Title { get; }
     public List<string> LinksTo { get; }
-    public bool ChildrenLoaded;
 
-    public override string ToString() => $"{Title}";
+    public override string ToString() => $"{Title}: [{string.Join(", ", LinksTo)}]";
 }

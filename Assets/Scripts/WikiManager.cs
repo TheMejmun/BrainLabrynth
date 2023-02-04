@@ -17,7 +17,7 @@ public class WikiManager : MonoBehaviour
 
     public static WikiManager Instance { get { return _instance; } }
 
-    private Dictionary<String, NodeData> nodeDict = new Dictionary<String, NodeData>();
+    private Dictionary<String, NodeData> NodeDict = new Dictionary<String, NodeData>();
 
     private void Awake()
     {
@@ -28,9 +28,23 @@ public class WikiManager : MonoBehaviour
         else
         {
             _instance = this;
-            // TODO just testing
-            ParseJSON(GetLinksJSON("Brad Pitt", null));
+
+            // TODO Testing
+            print(GetNode("Austria"));
         }
+    }
+
+    public NodeData GetNode(string title)
+    {
+        if (!NodeDict.ContainsKey(title))
+        {
+            string plcontinue = ParseJSON(GetLinksJSON(title, null));
+            while(plcontinue != null)
+            {
+                plcontinue = ParseJSON(GetLinksJSON(title, plcontinue));
+            }
+        }
+        return NodeDict[title];
     }
 
     private string GetLinksJSON(string titles, string plcontinue)
@@ -49,7 +63,7 @@ public class WikiManager : MonoBehaviour
     // https://stackoverflow.com/questions/12676746/parse-json-string-in-c-sharp
     private string ParseJSON(string json)
     {
-        print(json);
+        // print(json);
         string plcontinue = null;
 
         var root = JObject.Parse(json); // parse as array  
@@ -71,11 +85,11 @@ public class WikiManager : MonoBehaviour
                         // print(String.Format("title: {0}", title));
 
                         // Create entry if null
-                        if (!nodeDict.ContainsKey(title))
+                        if (!NodeDict.ContainsKey(title))
                         {
-                            nodeDict.Add(title, new NodeData(title));
+                            NodeDict.Add(title, new NodeData(title));
                         }
-                        NodeData nodeData = nodeDict[title];
+                        NodeData nodeData = NodeDict[title];
 
                         // Get links
                         JToken links = pageData.Value<JToken>("links");
@@ -92,7 +106,7 @@ public class WikiManager : MonoBehaviour
             }
         }
 
-        print(String.Format("plcontinue: {0}", plcontinue));
+        // print(String.Format("plcontinue: {0}", plcontinue));
 
         return plcontinue;
     }

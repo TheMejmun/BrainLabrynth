@@ -27,10 +27,25 @@ public class NeuronSpawner : MonoBehaviour
         
     }
 
+    private void removeColliderFromLayer()
+    {
+        int size = gameObjectBuffer.Count;
+        if (size == 0)
+        {
+            return;
+        }
+        var layer = gameObjectBuffer[size - 1];
+        layer.ForEach(obj =>
+        {
+            obj.GetComponent<Collider2D>().enabled = false;
+        });
+    }
+
     public void spawnGameObject(int numberOfLinks, Vector3 spawnPoint)
     {
         int randomRadius = (Random.Range(0, 3) + 5);
         List<GameObject> layer = new List<GameObject>();
+        removeColliderFromLayer();
         for (int i = 0; i < numberOfLinks; i++)
         {
             int factor = 360 / numberOfLinks;

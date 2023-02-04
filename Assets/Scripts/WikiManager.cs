@@ -30,7 +30,7 @@ public class WikiManager : MonoBehaviour
             _instance = this;
 
             // TODO Testing
-            print(GetNode("Austria"));
+            print(GetNode("Nikola Tesla"));
         }
     }
 

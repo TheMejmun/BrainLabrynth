@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 // https://gamedevbeginner.com/singletons-in-unity-the-right-way/#unity_singleton
@@ -15,6 +17,7 @@ public class WikiManager : MonoBehaviour
 
     public static WikiManager Instance { get { return _instance; } }
 
+    private Dictionary<String, NodeData> nodeDict = new Dictionary<String, NodeData>();
 
     private void Awake()
     {
@@ -26,7 +29,7 @@ public class WikiManager : MonoBehaviour
         {
             _instance = this;
             // TODO just testing
-            print(GetLinksJSON("Brad Pitt", null));
+            ParseJSON(GetLinksJSON("Brad Pitt", null));
         }
     }
 
@@ -41,5 +44,56 @@ public class WikiManager : MonoBehaviour
         StreamReader reader = new StreamReader(response.GetResponseStream());
         string jsonResponse = reader.ReadToEnd();
         return jsonResponse;
+    }
+
+    // https://stackoverflow.com/questions/12676746/parse-json-string-in-c-sharp
+    private string ParseJSON(string json)
+    {
+        print(json);
+        string plcontinue = null;
+
+        var root = JObject.Parse(json); // parse as array  
+        foreach (KeyValuePair<String, JToken> item in root)
+        {
+            // GET CONTINUE STRING
+            if (item.Key == "continue")
+            {
+                plcontinue = (String)item.Value["plcontinue"];
+            }
+            // PARSE PAGES
+            else if (item.Key == "query")
+            {
+                foreach (JToken page in item.Value["pages"])
+                {
+                    foreach (JToken pageData in page.AsJEnumerable())
+                    {
+                        string title = (String) pageData.Value<JToken>("title");
+                        // print(String.Format("title: {0}", title));
+
+                        // Create entry if null
+                        if (!nodeDict.ContainsKey(title))
+                        {
+                            nodeDict.Add(title, new NodeData(title));
+                        }
+                        NodeData nodeData = nodeDict[title];
+
+                        // Get links
+                        JToken links = pageData.Value<JToken>("links");
+                        foreach (JToken linkData in links.AsJEnumerable())
+                        {
+                            string linkTitle = (String) linkData.Value<JToken>("title");
+                            // print(String.Format("linkTitle: {0}", linkTitle));
+
+                            // Save link titles to dict
+                            nodeData.LinksTo.Add(linkTitle);
+                        }
+                    }
+                }
+            }
+        }
+
+        print(String.Format("plcontinue: {0}", plcontinue));
+
+        return plcontinue;
     }
 }

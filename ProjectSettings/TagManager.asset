@@ -6,6 +6,12 @@ TagManager:
   tags:
   - neuron
   - spawner
+  - plate
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
   layers:
   - Default
   - TransparentFX
@@ -45,6 +51,21 @@ TagManager:
     locked: 0
   - name: platform
     uniqueID: 3899044185
+    locked: 0
+  - name: 0
+    uniqueID: 1050327051
+    locked: 0
+  - name: 1
+    uniqueID: 3341562631
+    locked: 0
+  - name: 2
+    uniqueID: 3855682629
+    locked: 0
+  - name: 3
+    uniqueID: 3030414109
+    locked: 0
+  - name: 4
+    uniqueID: 398816973
     locked: 0
   - name: character
     uniqueID: 1388860795

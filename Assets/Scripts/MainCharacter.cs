@@ -7,8 +7,8 @@ public class MainCharacter : MonoBehaviour
     
 {
     private float movementX = 0;
+    private float movementY = 0;
     private float moveSpeed = 1.5f;
-    public Rigidbody2D myRigidbody;
     private bool isColliding;
     // Start is called before the first frame update
     void Start()
@@ -20,12 +20,9 @@ public class MainCharacter : MonoBehaviour
     void Update()
     {
         movementX = Input.GetAxisRaw("Horizontal");
-        transform.position += new Vector3(movementX, 0f, 0f) * moveSpeed * Time.deltaTime;
+        movementY = Input.GetAxisRaw("Vertical");
+        transform.position += new Vector3(movementX, movementY, 0f) * moveSpeed * Time.deltaTime;
         
-        if (Input.GetKeyDown(KeyCode.Space) && isColliding)
-        {
-            myRigidbody.velocity = Vector2.up * 5;
-        }
     }
 
     void OnCollisionEnter2D(Collision2D collison)
@@ -34,7 +31,7 @@ public class MainCharacter : MonoBehaviour
 
         if (collison.transform.tag != "Player")
         {
-            Debug.Log("Collision");
+            //Debug.Log("Collision");
         }
     }
 

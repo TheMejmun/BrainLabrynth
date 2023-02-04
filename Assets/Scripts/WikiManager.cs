@@ -17,7 +17,7 @@ public class WikiManager : MonoBehaviour
 
     public static WikiManager Instance { get { return _instance; } }
 
-    private Dictionary<String, WeirdNodeData> NodeDict = new Dictionary<String, WeirdNodeData>();
+    private Dictionary<String, NodeData> NodeDict = new Dictionary<String, NodeData>();
 
     private void Awake()
     {
@@ -34,7 +34,7 @@ public class WikiManager : MonoBehaviour
         }
     }
 
-    public WeirdNodeData GetNode(string title)
+    public NodeData GetNode(string title)
     {
         if (!NodeDict.ContainsKey(title))
         {
@@ -87,9 +87,9 @@ public class WikiManager : MonoBehaviour
                         // Create entry if null
                         if (!NodeDict.ContainsKey(title))
                         {
-                            NodeDict.Add(title, new WeirdNodeData(title));
+                            NodeDict.Add(title, new NodeData(title));
                         }
-                        WeirdNodeData nodeData = NodeDict[title];
+                        NodeData nodeData = NodeDict[title];
 
                         // Get links
                         JToken links = pageData.Value<JToken>("links");

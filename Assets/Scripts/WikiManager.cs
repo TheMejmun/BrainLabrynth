@@ -15,7 +15,10 @@ public class WikiManager : MonoBehaviour
 
     private static WikiManager _instance;
 
-    public static WikiManager Instance { get { return _instance; } }
+    public static WikiManager Instance { get { 
+            return _instance; 
+        } 
+    }
 
     private Dictionary<String, NodeData> NodeDict = new Dictionary<String, NodeData>();
 

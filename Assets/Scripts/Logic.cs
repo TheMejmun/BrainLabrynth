@@ -1,8 +1,6 @@
-using System.Collections;
+
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.TextCore.Text;
-using static Unity.Burst.Intrinsics.Arm;
 
 public class Logic : MonoBehaviour
 {
@@ -10,7 +8,6 @@ public class Logic : MonoBehaviour
     public GameObject tunnelPrefab;
     public GameObject thoughtGameObject;
     public GameObject neuronPrefab;
-    private WeirdWikiManager wikiManager = new WeirdWikiManager();
     private List<string> solvingTitles;
     private Vector3 lastPrincipalPosition;
     private float rotationOfLastChosenTunnel;
@@ -26,8 +23,8 @@ public class Logic : MonoBehaviour
         gameObjectBuffer = new List<List<GameObject>>();
         tunnelDataList = new List<TunnelDataHolder>();
         lastPrincipalPosition = thoughtGameObject.transform.position;
-        string currentTitle = "Albert Einstein";
-        placeJoinedTunnels(thoughtGameObject, currentTitle);
+        NodeData randomNode = WikiManager.Instance.GetRandomNode();
+        placeJoinedTunnels(thoughtGameObject, randomNode.Title);
         solvingTitles = computeSolvingTitles("United States", 3);
     }
 
@@ -63,12 +60,12 @@ public class Logic : MonoBehaviour
         List<string> solvingPath = new List<string>();
         solvingPath.Add(startTitle);
 
-        WeirdNodeData iterationNodeData = wikiManager.GetNode(startTitle);
+        NodeData iterationNodeData = WikiManager.Instance.GetRandomNode();
         for (int i = 0; i < pathLength; i++)
         {
             string selectedPageTitle = iterationNodeData.LinksTo[Random.Range(0, iterationNodeData.LinksTo.Count)];
             solvingPath.Add(selectedPageTitle);
-            iterationNodeData = wikiManager.GetNode(selectedPageTitle);
+            iterationNodeData = WikiManager.Instance.GetNode(selectedPageTitle);
         } 
 
         return solvingPath;
@@ -107,7 +104,7 @@ public class Logic : MonoBehaviour
         Vector3 thoughtGameObjectPosition = thoughtGameObject.transform.position;
         // Calculate angle depending on how many tunnels to place
 
-        WeirdNodeData nodeData = wikiManager.GetNode(currentTitle);
+        NodeData nodeData = WikiManager.Instance.GetNode(currentTitle);
         int numberOfTunnels = System.Math.Min(nodeData.LinksTo.Count, 5);
        
         List<string> data = nodeData.LinksTo.GetRange(0, numberOfTunnels);

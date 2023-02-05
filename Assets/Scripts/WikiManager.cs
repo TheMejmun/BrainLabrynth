@@ -22,7 +22,7 @@ public class WikiManager : MonoBehaviour
 
     private Dictionary<String, NodeData> NodeDict = new Dictionary<String, NodeData>();
 
-    private List<GetNodeJob> jobs = new List<GetNodeJob>();
+    private GetNodeJob job;
 
     private void Awake()
     {
@@ -41,36 +41,46 @@ public class WikiManager : MonoBehaviour
 
     private void Update()
     {
-        foreach(GetNodeJob job in jobs)
+        if(job != null)
         {
-            job.Update();
+            if (job.Update())
+            {
+                job = null;
+            }
         }
-        // print(String.Format("Jobs: {0}", jobs.Count));
+    }
 
-        jobs.RemoveAll(j => j.IsDone);
+    public void Abort()
+    {
+        if (job != null)
+        {
+            job.Abort();
+            job = null;
+            print("Aborted job");
+        }
     }
 
     public void RequestNode(string title, Action<NodeData> doAfter)
     {
-        var job = new GetNodeJob();
+        Abort();
+        job = new GetNodeJob();
         job.title = title;
         job.doAfter = doAfter;
         job.Start();
-
-        jobs.Add(job);
     }
 
     public void RequestRandomNode(Action<NodeData> doAfter)
     {
-        var job = new GetNodeJob();
+        Abort();
+        job = new GetNodeJob();
         job.doAfter = doAfter;
         job.Start();
-
-        jobs.Add(job);
     }
 
     private NodeData GetNode(string title)
     {
+        Debug.Log("Fetching Node " + title);
+
         if (!NodeDict.ContainsKey(title))
         {
             string plcontinue = ParseLinksJSON(GetLinksJSON(title, null));
@@ -226,7 +236,7 @@ public class WikiManager : MonoBehaviour
 
         protected override void ThreadFunction()
         {
-            Debug.Log("Starting ThreadFunction");
+            // Debug.Log("Starting ThreadFunction");
 
             if (title == null)
             {
@@ -237,7 +247,7 @@ public class WikiManager : MonoBehaviour
                 node = WikiManager.Instance.GetNode(title);
             }
 
-            Debug.Log("Finished ThreadFunction");
+            // Debug.Log("Finished ThreadFunction");
         }
         protected override void OnFinished()
         {

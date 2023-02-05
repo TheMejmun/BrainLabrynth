@@ -1,14 +1,17 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Unity.Jobs;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using Debug = UnityEngine.Debug;
 
 // https://gamedevbeginner.com/singletons-in-unity-the-right-way/#unity_singleton
-
 public class WikiManager : MonoBehaviour
 {
     private static string BASE_API_URL = "https://en.wikipedia.org/w/api.php";
@@ -22,6 +25,8 @@ public class WikiManager : MonoBehaviour
 
     private Dictionary<String, NodeData> NodeDict = new Dictionary<String, NodeData>();
 
+    private List<GetNodeJob> jobs = new List<GetNodeJob>();
+
     private void Awake()
     {
         if (_instance != null && _instance != this)
@@ -33,11 +38,40 @@ public class WikiManager : MonoBehaviour
             _instance = this;
 
             // TODO Testing
-            print(GetRandomNode());
+            RequestRandomNode((node) => { print(node); });
         }
     }
 
-    public NodeData GetNode(string title)
+    private void Update()
+    {
+        foreach(GetNodeJob job in jobs)
+        {
+            job.Update();
+        }
+
+        jobs.RemoveAll(j => j.IsDone);
+    }
+
+    public void RequestNode(string title, Action<NodeData> doAfter)
+    {
+        var job = new GetNodeJob();
+        job.title = title;
+        job.doAfter = doAfter;
+        job.Start();
+
+        jobs.Add(job);
+    }
+
+    public void RequestRandomNode(Action<NodeData> doAfter)
+    {
+        var job = new GetNodeJob();
+        job.doAfter = doAfter;
+        job.Start();
+
+        jobs.Add(job);
+    }
+
+    private NodeData GetNode(string title)
     {
         if (!NodeDict.ContainsKey(title))
         {
@@ -51,7 +85,7 @@ public class WikiManager : MonoBehaviour
         return NodeDict[title];
     }
 
-    public NodeData GetRandomNode()
+    private NodeData GetRandomNode()
     {
         return GetNode(ParseRandomJSON(GetRandomJSON()));
     }
@@ -184,5 +218,28 @@ public class WikiManager : MonoBehaviour
         }
 
         return null;
+    }
+
+    private class GetNodeJob : ThreadedJob
+    {
+        public string title = null;  // in
+        public Action<NodeData> doAfter; // in
+        public NodeData node; // out
+
+        protected override void ThreadFunction()
+        {
+            if (title == null)
+            {
+                node = WikiManager.Instance.GetRandomNode();
+            }
+            else
+            {
+                node = WikiManager.Instance.GetNode(title);
+            }
+        }
+        protected override void OnFinished()
+        {
+            doAfter(node);
+        }
     }
 }

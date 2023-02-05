@@ -30,7 +30,7 @@ public class WikiManager : MonoBehaviour
             _instance = this;
 
             // TODO Testing
-            print(GetNode("Nikola Tesla"));
+            print(GetRandomNode());
         }
     }
 
@@ -38,13 +38,18 @@ public class WikiManager : MonoBehaviour
     {
         if (!NodeDict.ContainsKey(title))
         {
-            string plcontinue = ParseJSON(GetLinksJSON(title, null));
-            while(plcontinue != null)
+            string plcontinue = ParseLinksJSON(GetLinksJSON(title, null));
+            while (plcontinue != null)
             {
-                plcontinue = ParseJSON(GetLinksJSON(title, plcontinue));
+                plcontinue = ParseLinksJSON(GetLinksJSON(title, plcontinue));
             }
         }
         return NodeDict[title];
+    }
+
+    public NodeData GetRandomNode()
+    {
+        return GetNode(ParseRandomJSON(GetRandomJSON()));
     }
 
     private string GetLinksJSON(string titles, string plcontinue)
@@ -61,7 +66,7 @@ public class WikiManager : MonoBehaviour
     }
 
     // https://stackoverflow.com/questions/12676746/parse-json-string-in-c-sharp
-    private string ParseJSON(string json)
+    private string ParseLinksJSON(string json)
     {
         // print(json);
         string plcontinue = null;
@@ -109,5 +114,40 @@ public class WikiManager : MonoBehaviour
         // print(String.Format("plcontinue: {0}", plcontinue));
 
         return plcontinue;
+    }
+
+    private string GetRandomJSON()
+    {
+        string requestString = BASE_API_URL + "?action=query&list=random&rnnamespace=0&rnlimit=1&format=json";
+        HttpWebRequest request = (HttpWebRequest)WebRequest.Create(requestString);
+        HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+        StreamReader reader = new StreamReader(response.GetResponseStream());
+        string jsonResponse = reader.ReadToEnd();
+        return jsonResponse;
+    }
+
+    // https://stackoverflow.com/questions/12676746/parse-json-string-in-c-sharp
+    private string ParseRandomJSON(string json)
+    {
+        var root = JObject.Parse(json); // parse as array  
+        foreach (KeyValuePair<String, JToken> item in root)
+        {
+            // PARSE PAGES
+            if (item.Key == "query")
+            {
+                foreach (JToken page in item.Value["random"])
+                {
+                    foreach (JProperty pageData in page.AsJEnumerable())
+                    {
+                        // print(pageData);
+                        if (pageData.Name == "title") { 
+                            return (String)pageData.Value;
+                        }
+                    }
+                }
+            }
+        }
+
+        return null;
     }
 }

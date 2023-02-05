@@ -129,6 +129,7 @@ GameObject:
   - component: {fileID: 8450561710525860749}
   - component: {fileID: 8450561710525860748}
   - component: {fileID: 8450561710525860751}
+  - component: {fileID: 355121062691743634}
   m_Layer: 0
   m_Name: neuron
   m_TagString: neuron
@@ -249,3 +250,18 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.92, y: 0.14507152}
   m_EdgeRadius: 0
+--- !u!111 &355121062691743634
+Animation:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8450561710525860750}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Animation: {fileID: 7400000, guid: 8ecb22731ef5acf4aa13f4ce70bab045, type: 2}
+  m_Animations: []
+  m_WrapMode: 0
+  m_PlayAutomatically: 1
+  m_AnimatePhysics: 0
+  m_CullingType: 0

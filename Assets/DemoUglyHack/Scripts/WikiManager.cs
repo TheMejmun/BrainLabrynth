@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -39,6 +40,14 @@ public class WeirdWikiManager : MonoBehaviour
 
     public WeirdNodeData GetNode(string title)
     {
+        var weirdNoteData = new WeirdNodeData("testNode");
+        weirdNoteData.LinksTo.Add("someNode");
+        weirdNoteData.LinksTo.Add("SomeOtherNode");
+        weirdNoteData.LinksTo.Add("SomeOtherNode");
+        weirdNoteData.LinksTo.Add("SomeOtherNode");
+        weirdNoteData.LinksTo.Add("SomeOtherNode");
+        return weirdNoteData;
+
         if (!NodeDict.ContainsKey(title))
         {
             string plcontinue = ParseJSON(GetLinksJSON(title, null));

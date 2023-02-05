@@ -43,6 +43,7 @@ public class WikiManager : MonoBehaviour
             {
                 plcontinue = ParseLinksJSON(GetLinksJSON(title, plcontinue));
             }
+            ReduceLinks(title);
         }
         return NodeDict[title];
     }
@@ -50,6 +51,37 @@ public class WikiManager : MonoBehaviour
     public NodeData GetRandomNode()
     {
         return GetNode(ParseRandomJSON(GetRandomJSON()));
+    }
+
+    // TODO discuss maxCount
+    private void ReduceLinks(string title, int maxCount = 5)
+    {
+        // This looks like infinite recursion, but as the Node has now been created already, it should not be a problem
+        NodeData node = GetNode(title);
+
+        if (node.LinksTo.Count <= maxCount)
+            return;
+
+        List<string> newLinksTo = new List<string>();
+
+        // TODO decide on how to remove
+        System.Random r = new System.Random();
+        for(int i = 0; i < maxCount; ++i) { 
+            int index  = r.Next(node.LinksTo.Count);
+
+            string link = node.LinksTo[index];
+            if (newLinksTo.Contains(link)) {
+                // Go again if duplicate
+                --i;
+            }
+            else
+            {
+                newLinksTo.Add(link);
+            }
+        }
+
+        node.LinksTo.Clear();
+        node.LinksTo.AddRange(newLinksTo);
     }
 
     private string GetLinksJSON(string titles, string plcontinue)

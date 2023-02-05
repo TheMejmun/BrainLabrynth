@@ -516,6 +516,7 @@ MonoBehaviour:
   tunnelPrefab: {fileID: 1985164242909386564, guid: f0c08b0575ad9d74a97237ee67074abf, type: 3}
   thoughtGameObject: {fileID: 1083363957}
   neuronPrefab: {fileID: 8450561710525860750, guid: a0ee98758454a9741bdad973cda339b1, type: 3}
+  maxNetworkDepth: 1
 --- !u!1 &1083363957
 GameObject:
   m_ObjectHideFlags: 0
@@ -641,8 +642,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1083363957}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.4, y: 0.4, z: 0.4}
+  m_LocalPosition: {x: -0.3332, y: -0.1984, z: 0}
+  m_LocalScale: {x: 0.21180955, y: 0.24373582, z: 0.4}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}

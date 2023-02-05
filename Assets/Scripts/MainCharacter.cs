@@ -30,7 +30,7 @@ public class MainCharacter : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         Debug.Log("Trigger warning. I feel triggered by " + collision.gameObject.tag);
-        if (collision.gameObject.tag == "neuron")
+        if (collision.gameObject.tag == "neuron" && collision.transform != null)
         {
             spawner.onNeuronTriggered(collision.transform);
         }

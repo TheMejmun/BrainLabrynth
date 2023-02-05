@@ -13,11 +13,18 @@ public class Logic : MonoBehaviour
     private WeirdWikiManager wikiManager = new WeirdWikiManager();
     private List<string> solvingTitles;
     private Vector3 lastPrincipalPosition;
-    private List<GameObject> tunnels = new List<GameObject>();
+    private float rotationOfLastChosenTunnel;
+    private List<List<GameObject>> gameObjectBuffer;
+    public int maxNetworkDepth;
+
+    private List<TunnelDataHolder> tunnelDataList;
+
 
     // Start is called before the first frame update
     void Start()
     {
+        gameObjectBuffer = new List<List<GameObject>>();
+        tunnelDataList = new List<TunnelDataHolder>();
         lastPrincipalPosition = thoughtGameObject.transform.position;
         string currentTitle = "Albert Einstein";
         placeJoinedTunnels(thoughtGameObject, currentTitle);
@@ -71,21 +78,26 @@ public class Logic : MonoBehaviour
     {
         float minDist = 10000;
         string closestTunnelText = "err";
-        GameObject closestTunnel = tunnels[0];
-        foreach (GameObject tunnel in tunnels)
+        
+        tunnelDataList.ForEach(tunnel =>
         {
-            float dist = Vector3.Distance(tunnel.transform.position, thoughtGameObject.transform.position);
+            float dist = Vector3.Distance(tunnel.position, thoughtGameObject.transform.position);
             if (dist < minDist)
             {
-                closestTunnel = tunnel;
-                closestTunnelText = closestTunnel.GetComponentInChildren<TMPro.TextMeshProUGUI>().text;
+                closestTunnelText = tunnel.text;
                 minDist = dist;
+                rotationOfLastChosenTunnel = tunnel.rotation.eulerAngles.z;
             }
-        }
+        });
+
+        // delete all old entries from tunnels
+        tunnelDataList.Clear();
 
         print(closestTunnelText);
         lastPrincipalPosition = neuronPosition.position;
+        removeColliderFromLayer();
         placeJoinedTunnels(thoughtGameObject, closestTunnelText);
+        checkBufferDepthAndDeleteObjects();
     }
 
     public void placeJoinedTunnels(GameObject thoughtGameObject, string currentTitle)
@@ -97,25 +109,63 @@ public class Logic : MonoBehaviour
 
         WeirdNodeData nodeData = wikiManager.GetNode(currentTitle);
         int numberOfTunnels = System.Math.Min(nodeData.LinksTo.Count, 5);
+       
         List<string> data = nodeData.LinksTo.GetRange(0, numberOfTunnels);
         //print(data);
 
+
         Vector3 initialDirection = new Vector3(1, 0, 0);
         int rotationAngle = 360 / numberOfTunnels;
-
+        List<GameObject> layer = new List<GameObject>();
         for (int i = 0; i < numberOfTunnels; i++)
         {
             // Calculate the rotation around z-axis
-            Quaternion rotationQuaternion = Quaternion.AngleAxis(rotationAngle * i, transform.forward);
+            var angle = rotationAngle * i;
+            Debug.Log(angle + "this is angle number " + i);
+            Quaternion rotationQuaternion = Quaternion.AngleAxis(angle, transform.forward);
             Vector3 shiftDirection = rotationQuaternion * initialDirection * 0.7f;
             // Place the tunnel
             TMPro.TextMeshProUGUI textMesh = tunnelPrefab.GetComponentInChildren<TMPro.TextMeshProUGUI>();
             textMesh.text = data[i];
             var tunnelInstance = Instantiate(tunnelPrefab, thoughtGameObjectPosition + shiftDirection, rotationQuaternion);
-            var neuronInstance = Instantiate(neuronPrefab, getPositionFromRadiusAndAngleAroundCharacter(8.4f, rotationAngle * i, lastPrincipalPosition), Quaternion.identity);
+            var neuronInstance = Instantiate(neuronPrefab, getPositionFromRadiusAndAngleAroundCharacter(8.4f, angle, thoughtGameObjectPosition), Quaternion.identity);
             //lastPrincipalPosition = neuronInstance.transform.position;
-            tunnels.Add(tunnelInstance);
+            layer.Add(tunnelInstance);
+            layer.Add(neuronInstance);
+
+            TunnelDataHolder tunnelData = new TunnelDataHolder();
+            tunnelData.text = data[i];
+            tunnelData.position = tunnelInstance.transform.position;
+            tunnelData.rotation = rotationQuaternion;
+            tunnelDataList.Add(tunnelData);
         }
+        gameObjectBuffer.Add(layer);
+    }
+
+    private void removeColliderFromLayer()
+    {
+        int size = gameObjectBuffer.Count;
+        if (size == 0)
+        {
+            return;
+        }
+        var layer = gameObjectBuffer[size - 1];
+        layer.ForEach(obj =>
+        {
+            if (obj.tag == "neuron")
+            {
+                obj.GetComponent<Collider2D>().enabled = false;
+
+            }
+            else if (obj.tag == "plate")
+            {
+                var components = obj.GetComponentsInChildren<EdgeCollider2D>();
+                foreach (var component in components)
+                {
+                    component.enabled = false;
+                }
+            }
+        });
     }
 
     private Vector3 getPositionFromRadiusAndAngleAroundCharacter(float radius, float angle, Vector3 spawnPoint)
@@ -124,5 +174,22 @@ public class Logic : MonoBehaviour
         float randomY = radius * Mathf.Sin((Mathf.PI / 180) * angle);
         return spawnPoint + new Vector3(randomX, randomY, 0);
 
+    }
+
+    private void checkBufferDepthAndDeleteObjects()
+    {
+        Debug.Log(gameObjectBuffer.Count);
+        if (gameObjectBuffer.Count > maxNetworkDepth)
+        {
+            gameObjectBuffer[0].ForEach(obj => Destroy(obj));
+            gameObjectBuffer.RemoveAt(0);
+        }
+    }
+
+    struct TunnelDataHolder
+    {
+        public string text;
+        public Vector3 position;
+        public Quaternion rotation;
     }
 }

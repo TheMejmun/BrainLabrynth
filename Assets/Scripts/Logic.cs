@@ -23,9 +23,12 @@ public class Logic : MonoBehaviour
         gameObjectBuffer = new List<List<GameObject>>();
         tunnelDataList = new List<TunnelDataHolder>();
         lastPrincipalPosition = thoughtGameObject.transform.position;
-        NodeData randomNode = WikiManager.Instance.GetRandomNode();
-        placeJoinedTunnels(thoughtGameObject, randomNode.Title);
-        solvingTitles = computeSolvingTitles("United States", 3);
+
+        WikiManager.Instance.RequestRandomNode((node) => {
+            placeJoinedTunnels(node, thoughtGameObject, node.Title);
+           // solvingTitles = computeSolvingTitles(node, 3);
+        });
+        
     }
 
     // Update is called once per frame
@@ -55,18 +58,18 @@ public class Logic : MonoBehaviour
     }
 
 
-    public List<string> computeSolvingTitles(string startTitle, int pathLength)
+    public List<string> computeSolvingTitles(NodeData startTitle, int pathLength)
     {
         List<string> solvingPath = new List<string>();
-        solvingPath.Add(startTitle);
+        solvingPath.Add(startTitle.Title);
 
-        NodeData iterationNodeData = WikiManager.Instance.GetRandomNode();
+        /*NodeData iterationNodeData = WikiManager.Instance.GetRandomNode();
         for (int i = 0; i < pathLength; i++)
         {
             string selectedPageTitle = iterationNodeData.LinksTo[Random.Range(0, iterationNodeData.LinksTo.Count)];
             solvingPath.Add(selectedPageTitle);
             iterationNodeData = WikiManager.Instance.GetNode(selectedPageTitle);
-        } 
+        } */
 
         return solvingPath;
     }
@@ -93,18 +96,21 @@ public class Logic : MonoBehaviour
         print(closestTunnelText);
         lastPrincipalPosition = neuronPosition.position;
         removeColliderFromLayer();
-        placeJoinedTunnels(thoughtGameObject, closestTunnelText);
+        WikiManager.Instance.RequestNode(closestTunnelText , (nodeData) =>
+        {
+            placeJoinedTunnels(nodeData, thoughtGameObject, closestTunnelText);
+
+        });
         checkBufferDepthAndDeleteObjects();
     }
 
-    public void placeJoinedTunnels(GameObject thoughtGameObject, string currentTitle)
+    public void placeJoinedTunnels(NodeData nodeData, GameObject thoughtGameObject, string currentTitle)
     {
 
         // Get current position of thought game object, we want to place the tunnels around the player
         Vector3 thoughtGameObjectPosition = thoughtGameObject.transform.position;
         // Calculate angle depending on how many tunnels to place
 
-        NodeData nodeData = WikiManager.Instance.GetNode(currentTitle);
         int numberOfTunnels = System.Math.Min(nodeData.LinksTo.Count, 5);
        
         List<string> data = nodeData.LinksTo.GetRange(0, numberOfTunnels);

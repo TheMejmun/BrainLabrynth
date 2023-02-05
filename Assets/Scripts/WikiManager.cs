@@ -6,6 +6,7 @@ using System.Net;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
+using System.Linq;
 
 // https://gamedevbeginner.com/singletons-in-unity-the-right-way/#unity_singleton
 
@@ -98,9 +99,12 @@ public class WikiManager : MonoBehaviour
 
                         // Get links
                         JToken links = pageData.Value<JToken>("links");
-                        foreach (JToken linkData in links.AsJEnumerable())
+                        IEnumerable<JToken> links1 = links.AsJEnumerable();
+                        int sampleSize = System.Math.Min(links1.OrderBy(order => new System.Random().Next()).ToList().Count, 5);
+                        IEnumerable<JToken> linkssampled = links1.OrderBy(order => new System.Random().Next()).ToList().Take(sampleSize);
+                        foreach (JToken linkData in linkssampled)
                         {
-                            string linkTitle = (String) linkData.Value<JToken>("title");
+                            string linkTitle = (String)linkData.Value<JToken>("title");
                             // print(String.Format("linkTitle: {0}", linkTitle));
 
                             // Save link titles to dict

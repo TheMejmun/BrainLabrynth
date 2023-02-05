@@ -18,10 +18,7 @@ public class WikiManager : MonoBehaviour
 
     private static WikiManager _instance;
 
-    public static WikiManager Instance { get { 
-            return _instance; 
-        } 
-    }
+    public static WikiManager Instance { get { return _instance; } }
 
     private Dictionary<String, NodeData> NodeDict = new Dictionary<String, NodeData>();
 
@@ -38,7 +35,7 @@ public class WikiManager : MonoBehaviour
             _instance = this;
 
             // TODO Testing
-            RequestRandomNode((node) => { print(node); });
+            //RequestRandomNode((node) => { print(node); });
         }
     }
 
@@ -48,6 +45,7 @@ public class WikiManager : MonoBehaviour
         {
             job.Update();
         }
+        // print(String.Format("Jobs: {0}", jobs.Count));
 
         jobs.RemoveAll(j => j.IsDone);
     }
@@ -228,6 +226,8 @@ public class WikiManager : MonoBehaviour
 
         protected override void ThreadFunction()
         {
+            Debug.Log("Starting ThreadFunction");
+
             if (title == null)
             {
                 node = WikiManager.Instance.GetRandomNode();
@@ -236,6 +236,8 @@ public class WikiManager : MonoBehaviour
             {
                 node = WikiManager.Instance.GetNode(title);
             }
+
+            Debug.Log("Finished ThreadFunction");
         }
         protected override void OnFinished()
         {

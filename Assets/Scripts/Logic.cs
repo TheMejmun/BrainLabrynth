@@ -24,6 +24,8 @@ public class Logic : MonoBehaviour
         tunnelDataList = new List<TunnelDataHolder>();
         lastPrincipalPosition = thoughtGameObject.transform.position;
 
+        //print("TEST");
+        //return;
         WikiManager.Instance.RequestRandomNode((node) => {
             placeJoinedTunnels(node, thoughtGameObject, node.Title);
            // solvingTitles = computeSolvingTitles(node, 3);

@@ -5,7 +5,7 @@ using UnityEngine;
 // https://answers.unity.com/questions/357033/unity3d-and-c-coroutines-vs-threading.html
 public class ThreadedJob
 {
-    private static bool DEBUG = false;
+    private static bool DEBUG = true;
 
     private bool m_IsDone = false;
     private object m_Handle = new object();
@@ -50,6 +50,8 @@ public class ThreadedJob
 
     public virtual bool Update()
     {
+        // if (DEBUG) Debug.Log("Updating Thread");
+
         if (IsDone)
         {
             if (DEBUG) Debug.Log("Executing OnFinished");
